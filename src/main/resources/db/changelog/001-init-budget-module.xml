@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="001-init-budget-tables" author="mateusz">
+
+        <createTable tableName="account_definitions">
+            <column name="id" type="SERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon" type="VARCHAR(50)" defaultValue="bi-wallet2"/>
+            <column name="group_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="accounts">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_accounts_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="definition_id" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_accounts_definition" referencedTableName="account_definitions" referencedColumnNames="id"/>
+            </column>
+            <column name="balance" type="DECIMAL(19, 2)" defaultValueNumeric="0.00"/>
+            <column name="last_update" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="balance_history">
+            <column name="id" type="SERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_history_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="total_balance" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="snapshot_date" type="DATE" defaultValueComputed="CURRENT_DATE"/>
+        </createTable>
+
+        <createTable tableName="expected_funds">
+            <column name="id" type="SERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_funds_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="amount" type="DECIMAL(19, 2)"/>
+            <column name="expected_date" type="DATE"/>
+            <column name="is_received" type="BOOLEAN" defaultValueBoolean="false"/>
+        </createTable>
+
+        <createTable tableName="user_settings">
+            <column name="user_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_settings_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="default_monthly_expenses" type="DECIMAL(19, 2)" defaultValueNumeric="2000.00"/>
+        </createTable>
+
+        <insert tableName="account_definitions">
+            <column name="name" value="PKO BP"/>
+            <column name="icon" value="bi-bank"/>
+            <column name="group_type" value="BANK"/>
+        </insert>
+        <insert tableName="account_definitions">
+            <column name="name" value="Gotówka"/>
+            <column name="icon" value="bi-cash-stack"/>
+            <column name="group_type" value="CASH"/>
+        </insert>
+        <insert tableName="account_definitions">
+            <column name="name" value="Inwestycje"/>
+            <column name="icon" value="bi-graph-up-arrow"/>
+            <column name="group_type" value="INVESTMENT"/>
+        </insert>
+        <insert tableName="account_definitions">
+            <column name="name" value="Crypto"/>
+            <column name="icon" value="bi-currency-bitcoin"/>
+            <column name="group_type" value="INVESTMENT"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

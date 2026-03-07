@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${app.cors.allowed-origins:http://localhost:4200}") // Domyślnie localhost jeśli brak zmiennej
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
     private String allowedOrigins;
 
     @Bean
@@ -42,11 +42,11 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/api/auth/**",      // Uproszczenie: wszystko co w auth jest publiczne
+                                "/api/auth/**",
                                 "/api/public/**",
-                                "/error"             // Ważne: pozwala Springowi wyświetlić błędy bez 403
+                                "/error"
                         ).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // Pamiętaj o prefiksie ROLE_ w bazie!
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -84,7 +84,6 @@ public class SecurityConfig {
         };
     }
 
-    // ... reszta beanów (passwordEncoder, authenticationManager) bez zmian
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
