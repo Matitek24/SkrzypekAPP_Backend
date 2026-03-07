@@ -40,7 +40,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new LoginResponse("Sukces", loginRequest.username()));
+                .body(new LoginResponse(jwt, loginRequest.username()));
     }
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
