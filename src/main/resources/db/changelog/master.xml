@@ -6,5 +6,5 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="db/changelog/001-init-budget-module.xml"/>
-
+    <include file="db/changelog/002-add-transactions-module.xml"/>
 </databaseChangeLog>

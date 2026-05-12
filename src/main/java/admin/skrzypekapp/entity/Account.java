@@ -28,7 +28,7 @@ public class Account {
 
     @ManyToOne
     @JoinColumn(name = "definition_id", nullable = false)
-    private AccountDefinitions definitions;
+    private AccountDefinitions definition;
 
     private BigDecimal balance;
 
