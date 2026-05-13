@@ -9,10 +9,12 @@ import admin.skrzypekapp.repository.AccountRepository;
 import admin.skrzypekapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,4 +51,24 @@ public class AccountService {
 
         accountRepository.save(account);
     }
+
+    @Transactional
+    public void deleteAccount(UUID accountId) {
+        if(!accountRepository.existsById(accountId)) {
+            throw new RuntimeException("Account not found");
+        }
+        accountRepository.deleteById(accountId);
+    }
+
+    @Transactional
+    public void updateBalance(UUID accountId, BigDecimal newBalance) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setBalance(newBalance);
+        account.setLastUpdate(LocalDateTime.now());
+        accountRepository.save(account);
+
+    }
+
 }

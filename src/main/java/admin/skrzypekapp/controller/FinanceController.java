@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/finances")
@@ -49,4 +50,20 @@ public class FinanceController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
-    }}
+    }
+
+    @DeleteMapping("/transactions/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable UUID id){
+        financeService.deleteTransaction(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/transactions/{id}")
+    public ResponseEntity<Void> updateTransaction(
+            @PathVariable UUID id,
+            @Valid @RequestBody CreateTransactionRequest request
+    ){
+        financeService.updateTransaction(id, request);
+        return ResponseEntity.ok().build();
+    }
+}

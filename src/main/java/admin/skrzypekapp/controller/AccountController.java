@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user/accounts")
@@ -44,5 +46,20 @@ public class AccountController {
         accountService.createAccount(userId, accountRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable UUID id) {
+        accountService.deleteAccount(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/balance")
+    public ResponseEntity<Void> updateBalance(
+            @PathVariable UUID id,
+            @RequestBody Map<String, BigDecimal> updates
+    ){
+        BigDecimal newBalance = updates.get("balance");
+        accountService.updateBalance(id, newBalance);
+        return ResponseEntity.ok().build();
     }
 }

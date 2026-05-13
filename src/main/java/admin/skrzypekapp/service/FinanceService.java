@@ -1,5 +1,6 @@
 package admin.skrzypekapp.service;
 
+import admin.skrzypekapp.dto.CreateTransactionRequest;
 import admin.skrzypekapp.dto.FinanceDashboardResponse;
 import admin.skrzypekapp.dto.MonthlyStatDto;
 import admin.skrzypekapp.entity.Account;
@@ -10,13 +11,14 @@ import admin.skrzypekapp.repository.AccountRepository;
 import admin.skrzypekapp.repository.TransactionRepository;
 import admin.skrzypekapp.repository.UserRepository;
 import admin.skrzypekapp.repository.UserSettingsRepository;
-import lombok.Getter;
+
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -141,5 +143,42 @@ public class FinanceService {
                 .emergencyFundProgressPercent(calculateEmergencyFundProgress(userId))
                 .recentTransactions(recentDtos)
                 .build();
+    }
+
+    @Transactional
+    public void deleteTransaction(UUID id) {
+        Transaction tx = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transakcja nie istnieje"));
+
+        Account account = tx.getAccount();
+
+        if ("EXPENSE".equals(tx.getType())) {
+            account.setBalance(account.getBalance().add(tx.getAmount()));
+        } else if ("INCOME".equals(tx.getType())) {
+            account.setBalance(account.getBalance().subtract(tx.getAmount()));
+        }
+
+        accountRepository.save(account);
+        transactionRepository.delete(tx);
+    }
+
+
+    @Transactional
+    public void updateTransaction(UUID id, CreateTransactionRequest request) {
+        Transaction tx = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono transakcji"));
+
+        if (!tx.getAccount().getId().equals(request.accountId())) {
+            Account newAccount = accountRepository.findById(request.accountId())
+                    .orElseThrow(() -> new RuntimeException("Wybrane konto nie istnieje"));
+            tx.setAccount(newAccount);
+        }
+        tx.setAmount(request.amount());
+        tx.setCategory(request.category() != null ? request.category() : "Inne");
+        tx.setDescription(request.description());
+        tx.setTransactionDate(request.transactionDate());
+        tx.setType(request.type());
+
+        transactionRepository.save(tx);
     }
 }
