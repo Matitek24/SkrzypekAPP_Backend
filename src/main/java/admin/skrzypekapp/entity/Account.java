@@ -9,6 +9,7 @@ import org.hibernate.mapping.Join;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,7 +21,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -1,14 +1,15 @@
 package admin.skrzypekapp.controller;
 
+import admin.skrzypekapp.dto.CreateAccountRequest;
 import admin.skrzypekapp.entity.User;
 import admin.skrzypekapp.repository.UserRepository;
 import admin.skrzypekapp.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,5 +36,13 @@ public class AccountController {
         response.put("totalBalance", accountService.getBalance(id));
 
         return ResponseEntity.ok(response);
+    }
+    @PostMapping
+    public ResponseEntity<Void> createAcount(@Valid @RequestBody CreateAccountRequest accountRequest) {
+        Long userId = 4L;
+
+        accountService.createAccount(userId, accountRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

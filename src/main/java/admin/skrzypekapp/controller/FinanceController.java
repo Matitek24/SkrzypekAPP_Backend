@@ -1,9 +1,12 @@
 package admin.skrzypekapp.controller;
 
+import admin.skrzypekapp.dto.CreateTransactionRequest;
 import admin.skrzypekapp.dto.FinanceDashboardResponse;
 import admin.skrzypekapp.dto.MonthlyStatDto;
 import admin.skrzypekapp.service.FinanceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,4 +33,20 @@ public class FinanceController {
         int targetYear = (year != null) ? year : Year.now().getValue();
         return ResponseEntity.ok(financeService.getMonthlyStats(userId, targetYear));
     }
-}
+    @PostMapping("/transactions")
+    public ResponseEntity<?> addTransaction(@Valid @RequestBody CreateTransactionRequest request){
+        Long userId = 4L;
+
+        financeService.addTransaction(
+                userId,
+                request.accountId(),
+                request.amount(),
+                request.type(),
+                request.category(),
+                request.description(),
+                request.transactionDate()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }}

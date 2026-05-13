@@ -13,6 +13,8 @@ import admin.skrzypekapp.repository.UserSettingsRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +119,10 @@ public class FinanceService {
 
     }
     public FinanceDashboardResponse getDashboardData(Long userId) {
-        List<Transaction> recentEntities = transactionRepository.findTop5ByUserIdOrderByTransactionDateDesc(userId);
+
+        Pageable topFive = PageRequest.of(0, 5);
+
+        List<Transaction> recentEntities = transactionRepository.findRecentTransactions(userId, topFive);
 
         List<FinanceDashboardResponse.TransactionDto> recentDtos = recentEntities.stream()
                 .map(t -> FinanceDashboardResponse.TransactionDto.builder()

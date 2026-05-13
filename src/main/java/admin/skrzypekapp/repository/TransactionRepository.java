@@ -1,6 +1,7 @@
 package admin.skrzypekapp.repository;
 
 import admin.skrzypekapp.entity.Transaction;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,5 +19,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "ORDER BY month", nativeQuery = true)
     List<Object[]> findMonthlyStats(Long userId, int year);
 
-    List<Transaction> findTop5ByUserIdOrderByTransactionDateDesc(Long userId);
+    // TransactionRepository.java
+    @Query("SELECT t FROM Transaction t WHERE t.user.id = :userId ORDER BY t.transactionDate DESC, t.createdAt DESC")
+    List<Transaction> findRecentTransactions(Long userId, Pageable pageable);
 }
